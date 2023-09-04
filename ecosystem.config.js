@@ -2,7 +2,7 @@ module.exports = {
   apps : [{
     name: "app",
     script: "./src/server.js",
-    instances: 1,
+    instances: 4,
     env: {
       NODE_ENV: "development",
     },
