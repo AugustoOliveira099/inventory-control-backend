@@ -21,7 +21,7 @@ class PricesController {
       })
     }
 
-    const { title, supplier, serial_number, client } = request.query;
+    const { title, supplier, serial_number, client, current_month } = request.query;
     let { startDate, endDate, details, isBought, isSold, max_value, min_value } = request.query;
     const user_id = request.user.id;
 
@@ -36,9 +36,12 @@ class PricesController {
 
     const isEmpty = title === "" && details === "" && supplier === "" && serial_number === "" && client === ""
 
-    if (isEmpty || !startDate && !endDate || startDate && endDate) {
-      startDate = startDate ? `${startDate} 12:00:00`: currentDate().newStartDate
-      endDate = endDate ? `${endDate} 12:00:00`: currentDate().newEndDate
+    if (startDate && endDate) {
+        startDate = `${startDate} 12:00:00`
+        endDate = `${endDate} 12:00:00`
+    } else if (current_month === 'true') {
+        startDate = currentDate().newStartDate
+        endDate = currentDate().newEndDate
     }
 
     let prices;
@@ -151,7 +154,7 @@ class PricesController {
         }
       } else {
         if (min_value > 0 && max_value > 0) {
-            products = await knex("products")
+            prices = await knex("products")
                 .select([
                     "value_sold",
                     "value_bought"
@@ -172,7 +175,7 @@ class PricesController {
                     });
                 })
         } else if (min_value > 0 && !max_value) {
-            products = await knex("products")
+            prices = await knex("products")
                 .select([
                     "value_sold",
                     "value_bought"
@@ -192,7 +195,7 @@ class PricesController {
                     });
                 })
         } else if (!min_value && max_value > 0) {
-            products = await knex("products")
+            prices = await knex("products")
                 .select([
                     "value_sold",
                     "value_bought"
@@ -212,7 +215,7 @@ class PricesController {
                     });
                 })
         } else {
-            products = await knex("products")
+            prices = await knex("products")
                 .select([
                     "value_sold",
                     "value_bought"
@@ -355,7 +358,7 @@ class PricesController {
         }
       } else {
         if (min_value > 0 && max_value > 0) {
-            products = await knex("products")
+            prices = await knex("products")
                 .select([
                     "value_sold",
                     "value_bought"
@@ -381,7 +384,7 @@ class PricesController {
                     });
                 })
         } else if (min_value > 0 && !max_value) {
-            products = await knex("products")
+            prices = await knex("products")
                 .select([
                     "value_sold",
                     "value_bought"
@@ -406,7 +409,7 @@ class PricesController {
                     });
                 })
         } else if (!min_value && max_value > 0) {
-            products = await knex("products")
+            prices = await knex("products")
                 .select([
                     "value_sold",
                     "value_bought"
@@ -431,7 +434,7 @@ class PricesController {
                     });
                 })
         } else {
-            products = await knex("products")
+            prices = await knex("products")
                 .select([
                     "value_sold",
                     "value_bought"
@@ -575,7 +578,7 @@ class PricesController {
         }
       } else {
         if (min_value > 0 && max_value > 0) {
-            products = await knex("products")
+            prices = await knex("products")
                 .select([
                     "value_sold",
                     "value_bought"
@@ -600,7 +603,7 @@ class PricesController {
                     });
                 })
         } else if (min_value > 0 && !max_value) {
-            products = await knex("products")
+            prices = await knex("products")
                 .select([
                     "value_sold",
                     "value_bought"
@@ -624,7 +627,7 @@ class PricesController {
                     });
                 })
         } else if (!min_value && max_value > 0) {
-            products = await knex("products")
+            prices = await knex("products")
                 .select([
                     "value_sold",
                     "value_bought"
@@ -648,7 +651,7 @@ class PricesController {
                     });
                 })
         } else {
-            products = await knex("products")
+            prices = await knex("products")
                 .select([
                     "value_sold",
                     "value_bought"

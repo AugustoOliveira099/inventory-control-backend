@@ -20,10 +20,7 @@ class ProductsController {
         if (title === "" || 
             supplier === "" || 
             value_bought === 0.0 || 
-            bought_at === "" ||
-            color === "" ||
-            model === "" ||
-            serial_number === "")  {
+            bought_at === "")  {
             throw new AppError("Um ou mais campos não foram preenchidos.");
         }
 
@@ -71,7 +68,7 @@ class ProductsController {
             })
         }
 
-        const { title, supplier, limit, page, serial_number, client } = request.query;
+        const { title, supplier, limit, page, serial_number, client, current_month, columnName, columnNameRaw, order } = request.query;
         let { startDate, endDate, details, isBought, isSold, max_value, min_value } = request.query;
         const user_id = request.user.id;
         const startIndex = (page - 1) * limit;
@@ -85,11 +82,12 @@ class ProductsController {
             throw new AppError("Insira a data de início e fim da pesquisa.")
         }
 
-        const isEmpty = (title === "" && details === "" && supplier === "" && serial_number === "" && client === "")
-
-        if ( isEmpty && ((!startDate && !endDate) || (startDate && endDate)) ) {
-            startDate = startDate ? `${startDate} 12:00:00`: currentDate().newStartDate
-            endDate = endDate ? `${endDate} 12:00:00`: currentDate().newEndDate
+        if (startDate && endDate) {
+            startDate = `${startDate} 12:00:00`
+            endDate = `${endDate} 12:00:00`
+        } else if (current_month === 'true') {
+            startDate = currentDate().newStartDate
+            endDate = currentDate().newEndDate
         }
 
         let products;
@@ -130,8 +128,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else if (min_value > 0 && !max_value) {
                     products = await knex("products")
                         .select([
@@ -165,8 +163,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else if (!min_value && max_value > 0) {
                     products = await knex("products")
                         .select([
@@ -200,8 +198,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else {
                     products = await knex("products")
                         .select([
@@ -229,8 +227,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 }
             } else {
                 if (min_value > 0 && max_value > 0) {
@@ -260,8 +258,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else if (min_value > 0 && !max_value) {
                     products = await knex("products")
                         .select([
@@ -288,8 +286,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else if (!min_value && max_value > 0) {
                     products = await knex("products")
                         .select([
@@ -316,8 +314,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else {
                     products = await knex("products")
                         .select([
@@ -338,8 +336,8 @@ class ProductsController {
                         .whereLike("client", `%${client}%`)
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 }
             }
         } else if (isBought && !isSold) {
@@ -383,8 +381,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else if (min_value > 0 && !max_value) {
                     products = await knex("products")
                         .select([
@@ -423,8 +421,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else if (!min_value && max_value > 0) {
                     products = await knex("products")
                         .select([
@@ -463,8 +461,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else {
                     products = await knex("products")
                         .select([
@@ -497,8 +495,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 }
             } else {
                 if (min_value > 0 && max_value > 0) {
@@ -533,8 +531,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else if (min_value > 0 && !max_value) {
                     products = await knex("products")
                         .select([
@@ -566,8 +564,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else if (!min_value && max_value > 0) {
                     products = await knex("products")
                         .select([
@@ -599,8 +597,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else {
                     products = await knex("products")
                         .select([
@@ -626,8 +624,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 }
             }
         } else if (!isBought && isSold) {
@@ -670,8 +668,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else if (min_value > 0 && !max_value) {
                     products = await knex("products")
                         .select([
@@ -709,8 +707,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else if (!min_value && max_value > 0) {
                     products = await knex("products")
                         .select([
@@ -748,8 +746,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else {
                     products = await knex("products")
                         .select([
@@ -781,8 +779,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 }
             } else {
                 if (min_value > 0 && max_value > 0) {
@@ -816,8 +814,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else if (min_value > 0 && !max_value) {
                     products = await knex("products")
                         .select([
@@ -848,8 +846,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else if (!min_value && max_value > 0) {
                     products = await knex("products")
                         .select([
@@ -880,8 +878,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 } else {
                     products = await knex("products")
                         .select([
@@ -906,8 +904,8 @@ class ProductsController {
                         })
                         .offset(startIndex)
                         .limit(limit)
-                        .orderBy("updated_at", "desc")
-                        .orderByRaw("title")
+                        .orderBy(columnName, order)
+                        .orderByRaw(columnNameRaw)
                 }
             }
         }
