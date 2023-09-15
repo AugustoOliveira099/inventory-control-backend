@@ -698,53 +698,6 @@ class PricesController {
       values
     });
   }
-  
-  // async index(request, response) {
-  //   const { startDate, endDate, allProducts } = request.query;
-  //   const user_id = request.user.id;
-  //   let newStartDate = startDate;
-  //   let newEndDate = endDate;
-
-  //   if (!allProducts && !startDate || !endDate) {
-  //     const currentDate = new Date();
-  //     const year = currentDate.getFullYear();
-  //     const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-  //     const day = String(currentDate.getDate()).padStart(2, "0");
-
-  //     const formattedDate = `${year}-${month}-${day}`;
-      
-  //     newStartDate = formattedDate.slice(0, -2) + "01 12:00:00";
-
-  //     newEndDate = formattedDate + " 12:00:00";
-  //   }
-
-  //   let prices
-
-  //   if (allProducts) {
-  //     prices = await knex("products")
-  //       .select([
-  //           "value_sold",
-  //           "value_bought"
-  //       ])
-  //       .where({ user_id })
-  //   } else {
-  //     prices = await knex("products")
-  //       .select([
-  //           "value_sold",
-  //           "value_bought"
-  //       ])
-  //       .where({ user_id })
-  //       .where(function () {
-  //           this.where(function () {
-  //               this.where("bought_at", ">=", newStartDate).andWhere("bought_at", "<=", newEndDate);
-  //           }).orWhere(function () {
-  //               this.where("sold_at", ">=", newStartDate).andWhere("sold_at", "<=", newEndDate);
-  //           });
-  //       })
-  //   }
-
-  //   return response.json(prices);
-  // }
 }
 
 module.exports = PricesController;

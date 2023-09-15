@@ -14,14 +14,16 @@ const usersController = new UsersController();
 const userAvatarController = new UserAvatarController();
 const userPasswordController = new UserPasswordController();
 
-usersRoutes.post("/", usersController.create);
+usersRoutes.get("/", ensureAuthenticated, usersController.index);
+usersRoutes.get("/:id", ensureAuthenticated, usersController.show);
+usersRoutes.post("/", ensureAuthenticated, usersController.create);
 usersRoutes.put("/", ensureAuthenticated, usersController.update);
 usersRoutes.delete("/", ensureAuthenticated, usersController.delete);
+
 usersRoutes.patch("/avatar", ensureAuthenticated, upload.single("avatar"), userAvatarController.update);
 
 usersRoutes.post("/password", userPasswordController.create);
 usersRoutes.get("/password/:hash", userPasswordController.show);
 usersRoutes.put("/password/:hash", userPasswordController.update);
-
 
 module.exports = usersRoutes;

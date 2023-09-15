@@ -24,6 +24,37 @@ class ProductsController {
             throw new AppError("Um ou mais campos não foram preenchidos.");
         }
 
+        const user = await knex("users")
+            .where({ id: user_id })
+            .first();
+
+        if (user.is_active) {
+            const [year, month, day] = user.paid_at.split(" ")[0].split("-");
+            const lastPayMonth = parseInt(month) + 1;
+            let payday;
+    
+            if (lastPayMonth < 10) {
+            payday = `${year}-0${lastPayMonth}-${day}`;
+            } else {
+            payday = `${year}-${lastPayMonth}-${day}`;
+            }
+    
+            const currentTime = await knex('users')
+            .select(knex.raw('CURRENT_TIMESTAMP'))
+            .first();
+            
+            const [currentTimeFormatted,] = currentTime.CURRENT_TIMESTAMP.split(" ");
+    
+            if (payday < currentTimeFormatted) {
+            await knex("users").update({ is_active: false })
+                .where({ id: user.id })
+    
+            throw new AppError(`O pagamento do serviço está atrasado. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email. Obrigado!`, 403);
+            }
+        } else {
+            throw new AppError(`O pagamento do serviço está atrasado. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email. Obrigado!`, 403);
+        }
+
         const boughtAt = `${bought_at} 12:00:00`;
         let soldAt = sold_at;
 
@@ -51,16 +82,15 @@ class ProductsController {
     }
 
     async index(request, response) {
-        const currentDate = () => {
-            const currentDate = new Date();
-            const year = currentDate.getFullYear();
-            const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-            const day = String(currentDate.getDate()).padStart(2, "0");
-        
-            const formattedDate = `${year}-${month}-${day}`;
+        async function currentDate() {
+            const currentDate = await knex('users')
+            .select(knex.raw('CURRENT_TIMESTAMP'))
+            .first();
+            
+            const [formattedDate,] = currentDate.CURRENT_TIMESTAMP.split(" ");
             
             const newStartDate = formattedDate.slice(0, -2) + "01 12:00:00";
-            const newEndDate = formattedDate + " 12:00:00";
+            const newEndDate = formattedDate.slice(0, -2) + "31 12:00:00";
         
             return ({
                 newStartDate,
@@ -72,6 +102,37 @@ class ProductsController {
         let { startDate, endDate, details, isBought, isSold, max_value, min_value } = request.query;
         const user_id = request.user.id;
         const startIndex = (page - 1) * limit;
+
+        const user = await knex("users")
+            .where({ id: user_id })
+            .first();
+
+        if (user.is_active) {
+            const [year, month, day] = user.paid_at.split(" ")[0].split("-");
+            const lastPayMonth = parseInt(month) + 1;
+            let payday;
+    
+            if (lastPayMonth < 10) {
+            payday = `${year}-0${lastPayMonth}-${day}`;
+            } else {
+            payday = `${year}-${lastPayMonth}-${day}`;
+            }
+    
+            const currentTime = await knex('users')
+            .select(knex.raw('CURRENT_TIMESTAMP'))
+            .first();
+            
+            const [currentTimeFormatted,] = currentTime.CURRENT_TIMESTAMP.split(" ");
+    
+            if (payday < currentTimeFormatted) {
+            await knex("users").update({ is_active: false })
+                .where({ id: user.id })
+    
+            throw new AppError(`O pagamento do serviço está atrasado. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email. Obrigado!`, 403);
+            }
+        } else {
+            throw new AppError(`O pagamento do serviço está atrasado. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email. Obrigado!`, 403);
+        }
 
         isBought = isBought === 'true' ? true : false;
         isSold = isSold === 'true' ? true : false;
@@ -910,24 +971,43 @@ class ProductsController {
             }
         }
 
-        // const total = await knex("products")
-        //     .where({ user_id })
-        //     .count()
-        //     .first()
-
-        // const count = total["count(*)"]
-
-        // const productsResponse = {
-        //     count,
-        //     products
-        // }
-
         return response.json(products);
     }
 
     async show(request, response) {
         const { id } = request.params;
         const user_id = request.user.id;
+
+        const user = await knex("users")
+            .where({ id: user_id })
+            .first();
+
+        if (user.is_active) {
+            const [year, month, day] = user.paid_at.split(" ")[0].split("-");
+            const lastPayMonth = parseInt(month) + 1;
+            let payday;
+    
+            if (lastPayMonth < 10) {
+            payday = `${year}-0${lastPayMonth}-${day}`;
+            } else {
+            payday = `${year}-${lastPayMonth}-${day}`;
+            }
+    
+            const currentTime = await knex('users')
+            .select(knex.raw('CURRENT_TIMESTAMP'))
+            .first();
+            
+            const [currentTimeFormatted,] = currentTime.CURRENT_TIMESTAMP.split(" ");
+    
+            if (payday < currentTimeFormatted) {
+            await knex("users").update({ is_active: false })
+                .where({ id: user.id })
+    
+            throw new AppError(`O pagamento do serviço está atrasado. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email. Obrigado!`, 403);
+            }
+        } else {
+            throw new AppError(`O pagamento do serviço está atrasado. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email. Obrigado!`, 403);
+        }
 
         const product = await knex("products").where({ user_id }).where({ id }).first();
 
@@ -947,6 +1027,36 @@ class ProductsController {
             serial_number
         } = request.body;
 
+        const user = await knex("users")
+            .where({ id: user_id })
+            .first();
+
+        if (user.is_active) {
+            const [year, month, day] = user.paid_at.split(" ")[0].split("-");
+            const lastPayMonth = parseInt(month) + 1;
+            let payday;
+    
+            if (lastPayMonth < 10) {
+            payday = `${year}-0${lastPayMonth}-${day}`;
+            } else {
+            payday = `${year}-${lastPayMonth}-${day}`;
+            }
+    
+            const currentTime = await knex('users')
+            .select(knex.raw('CURRENT_TIMESTAMP'))
+            .first();
+            
+            const [currentTimeFormatted,] = currentTime.CURRENT_TIMESTAMP.split(" ");
+    
+            if (payday < currentTimeFormatted) {
+            await knex("users").update({ is_active: false })
+                .where({ id: user.id })
+    
+            throw new AppError(`O pagamento do serviço está atrasado. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email. Obrigado!`, 403);
+            }
+        } else {
+            throw new AppError(`O pagamento do serviço está atrasado. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email. Obrigado!`, 403);
+        }
         
         let { bought_at, sold_at } = request.body;
 
@@ -984,6 +1094,37 @@ class ProductsController {
 
     async delete(request, response) {
         const { id } = request.params;
+
+        const user = await knex("users")
+            .where({ id: user_id })
+            .first();
+
+        if (user.is_active) {
+            const [year, month, day] = user.paid_at.split(" ")[0].split("-");
+            const lastPayMonth = parseInt(month) + 1;
+            let payday;
+    
+            if (lastPayMonth < 10) {
+            payday = `${year}-0${lastPayMonth}-${day}`;
+            } else {
+            payday = `${year}-${lastPayMonth}-${day}`;
+            }
+    
+            const currentTime = await knex('users')
+            .select(knex.raw('CURRENT_TIMESTAMP'))
+            .first();
+            
+            const [currentTimeFormatted,] = currentTime.CURRENT_TIMESTAMP.split(" ");
+    
+            if (payday < currentTimeFormatted) {
+            await knex("users").update({ is_active: false })
+                .where({ id: user.id })
+    
+            throw new AppError(`O pagamento do serviço está atrasado. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email. Obrigado!`, 403);
+            }
+        } else {
+            throw new AppError(`O pagamento do serviço está atrasado. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email. Obrigado!`, 403);
+        }
 
         await knex("products").where({ id }).delete();
 

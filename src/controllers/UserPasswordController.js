@@ -26,14 +26,15 @@ class UserPasswordController {
     }
 
     if (!user.is_active) {
-      throw new AppError("O usuário está com o pagamento atrasado.");
+      throw new AppError(`O pagamento do serviço está atrasado. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email. Obrigado!`, 403);
     }
 
     const min = 10000000;
     const max = 1000000000000000;
     const randomInt = (Math.random() * (max - min + 1)) + min;
     const urlHash = await hash(`${randomInt}`, 8);
-    const cleanUrlHash = urlHash.replace('.', '')
+    let cleanUrlHash = urlHash.replace('.', '')
+    cleanUrlHash = urlHash.replace('/', '')
     const url = `${process.env.BASEURL}/password/${cleanUrlHash}`;
 
     await knex("users")
