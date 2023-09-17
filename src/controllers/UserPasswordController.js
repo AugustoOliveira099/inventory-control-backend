@@ -34,7 +34,7 @@ class UserPasswordController {
     const randomInt = (Math.random() * (max - min + 1)) + min;
     const urlHash = await hash(`${randomInt}`, 8);
     let cleanUrlHash = urlHash.replace('.', '')
-    cleanUrlHash = urlHash.replace('/', '')
+    cleanUrlHash = cleanUrlHash.replace('/', '')
     const url = `${process.env.BASEURL}/password/${cleanUrlHash}`;
 
     await knex("users")
