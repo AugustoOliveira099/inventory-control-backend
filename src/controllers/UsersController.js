@@ -153,28 +153,14 @@ class UsersController {
         }
 
         let users
-        
-        if (name && email) {
-            users = await knex("users")
-                .select("*")
-                .where({ name })
-                .where({ email })
-                .orderBy("paid_at");
-        } else if (name) {
-            users = await knex("users")
-                .select("*")
-                .where({ name })
-                .orderBy("paid_at");
-        } else if (email) {
-            users = await knex("users")
-                .select("*")
-                .where({ email })
-                .orderBy("paid_at");
-        } else {
-            users = await knex("users")
-                .select("*")
-                .orderBy("paid_at");
-        }
+
+        users = await knex("users")
+            .select("*")
+            .where(function () {
+                this.whereLike("name", `%${name}%`)
+                    .orWhereLike("email", `%${email}%`);
+            })
+            .orderBy("paid_at");
 
         return response.json(users);
     }

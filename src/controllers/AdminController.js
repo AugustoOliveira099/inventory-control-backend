@@ -9,8 +9,6 @@ class AdminController {
     const user_id = request.user.id;
     const { id } = request.params;
 
-    console.log({ paidAt, name, email, password, isAdmin })
-
     const checkIsAdmin = await knex("users")
       .select("is_admin")
       .where({ id: user_id})

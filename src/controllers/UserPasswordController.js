@@ -26,7 +26,7 @@ class UserPasswordController {
     }
 
     if (!user.is_active) {
-      throw new AppError(`O pagamento do serviço está atrasado. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email. Obrigado!`, 403);
+      throw new AppError(`Para atualizar a senha é preciso regularizar o pagamento do serviço. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email cadastrado. Obrigado!`, 403);
     }
 
     const min = 10000000;
@@ -52,12 +52,15 @@ class UserPasswordController {
     const { hash } = request.params;
 
     const checkUserExists = await knex("users")
-      .select("id")
       .where({ hash })
       .first();
 
     if (!checkUserExists) {
       throw new AppError("Link inválido. Para atualizar a senha, siga as intruções enviadas para o seu e-mail.");
+    }
+
+    if (!checkUserExists.is_active) {
+      throw new AppError(`Para atualizar a senha é preciso regularizar o pagamento do serviço. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email cadastrado. Obrigado!`, 403);
     }
 
     return response.json();
@@ -72,12 +75,15 @@ class UserPasswordController {
     }
 
     const checkUserExists = await knex("users")
-      .select("id")
       .where({ hash: auxHash })
       .first();
 
     if (!checkUserExists) {
       throw new AppError("Link inválido. Para atualizar a senha, siga as intruções enviadas para o seu e-mail.");
+    }
+
+    if (!checkUserExists.is_active) {
+      throw new AppError(`Para atualizar a senha é preciso regularizar o pagamento do serviço. Por favor, entre em contato com a nossa equipe pelo email ${process.env.EMAIL_ADMIN_1}. Informe o seu nome e email cadastrado. Obrigado!`, 403);
     }
 
     const hashedPassword = await hash(password, 8);
