@@ -1016,6 +1016,7 @@ class ProductsController {
 
     async update(request, response) {
         const { id } = request.params;
+        const user_id = request.user.id;
         const { title, 
             details, 
             supplier, 
